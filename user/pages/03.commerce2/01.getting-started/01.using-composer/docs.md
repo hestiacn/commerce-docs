@@ -135,3 +135,119 @@ If the dependency is required by another package, it will not be removed.
 [composer update]: https://getcomposer.org/doc/03-cli.md#update
 [composer require]: https://getcomposer.org/doc/03-cli.md#require
 [composer remove]: https://getcomposer.org/doc/03-cli.md#remove
+
+---
+标题：使用 Composer
+分类：
+     类别： 文档
+---
+
+【Composer】是一个用于管理项目级别的依赖关系的工具，一个
+项目是您的网站或 Web 应用程序。 已经成为事实上的依赖
+PHP的管理工具。 Composer 允许 PHP 开发人员轻松构建独立的
+可以由其他人共享和集成的分布式库。 这是
+部分由 PHP 框架互操作性小组 (FIG) 和 [PSR-4] 实现
+用于自动加载类文件。
+
+> 依赖管理不是一个新概念，也不是 PHP 独有的。 NodeJS 的 NPM，
+> Bower 用于前端库，Bundler/Gems 用于 Ruby，PIP 用于 Python，Maven 用于
+> Java 等。
+
+如果您曾经使用过 [Drush] Make 下载 Drupal 模块和主题，那么
+所有这一切听起来很熟悉。 你可以认为 Composer 是更高级的
+Drush Make 适用于所有 PHP 项目和包。 与 Drush Make 相比，
+Composer 的好处是能够递归地解决依赖关系
+（下载每个依赖项的依赖项）并能够检测冲突。
+
+## 为什么商务部需要它？
+
+现代应用程序（例如 Drupal 8）由许多类组成，因此它是
+手动包含每一项是不切实际且成本高昂的。 相反，应用程序
+包括一个特殊的类，称为自动加载器，然后它会自动
+在第一次需要时包含其他类。 当 Composer 运行时，它
+重新生成自动加载器，为其提供新下载的位置
+依赖关系。
+
+Commerce 使用各种[库和依赖项](../../02.developer-guide/03.core/00.libraries-and-dependencies)。 没有作曲家和
+生成的类自动加载器您无法使用 Commerce。 我们依赖的库
+即使手动安装，也不可用。
+
+Composer 还启用版本约束并防止依赖冲突。
+如果没有 Composer，就无法告诉我们的用户“确保您也更新
+这种依赖性也是如此。”
+
+这也意味着您的工作量会减少。
+
+## 如何安装 Composer
+
+Composer 提供了一个方便的安装程序，您可以直接从命令行执行。
+请按照[如何在此处安装 Composer](https://www.getcomposer.org/doc/00-intro.md) 的说明进行操作。
+我们建议您使用最新版本的作曲家，因为旧版本可能会或可能不会工作。
+检查您的版本是否与 [getcomposer.org](https://getcomposer.org/) 上列出的版本匹配。
+
+
+
+＃＃ 如何使用它
+
+### [composer.json]
+
+``composer.json`` 文件定义了所需的库、模块、主题和
+Drupal 核心下载。 它允许您在 Composer 完成时运行命令
+手术等等。
+
+这是“commerce_authnet”模块中的示例。
+
+```json
+{
+   “名称”：“drupal/commerce_authnet”，
+   “类型”：“drupal 模块”，
+   "description": "为 Authorize.net 提供商务集成。",
+   “主页”：“http://drupal.org/project/commerce_authnet”，
+   “许可证”：“GPL-2.0+”，
+   “要求”： {
+     “drupal/商业”：“^2”，
+     “commerceguys/authnet”：“开发大师”
+   }
+}
+````
+
+这将项目指定为“drupal/commerce_authnet”中可用的 Drupal 模块
+有关其许可证和主页的信息。 它需要任何“商业”
+可满足的版本 2 发布，以及“commerceguys/authnet”库的开发版本。
+
+> Composer 依赖语义版本控制，使用 `~` 和 `^` 运算符，或者直接
+> 版本名称（`2.0-beta3`。）
+>
+> 查看 Packagist Semver Checker 以探索版本约束的工作原理。
+> 此链接适用于 `drupal/core: ^8.3` [https://semver.mwl.be/#?package=drupal%2Fdrupal&version=%5E8.3&minimum-stability=dev](https://semver.mwl. 是/#?package=drupal%2Fdrupal&version=%5E8.3&minimum-stability=dev)
+
+### [composer.lock]
+
+`composer.lock` 文件是由 Composer 自动生成的。 它有关于
+项目中的所有依赖项，包括您的模块或主题所依赖的依赖项
+在。
+
+锁定文件包含有关如何获取依赖项及其依赖项的信息
+依赖版本限制。
+
+### [composer 安装]
+
+`composer install` 命令将下载并安装依赖项。 安装命令将安装锁定文件。 但是，如果没有可用的锁定文件，它将充当更新命令。
+
+该命令将重新生成类自动加载器。
+
+### [composer 更新]
+
+`composer update` 命令解析依赖关系并生成 `composer.lock` 文件。 update 命令会将依赖项更新到最新版本。
+
+该命令将重新生成类自动加载器。
+
+### [composer 依赖]
+
+`composer require` 命令向您的项目添加新的依赖项。 这将更新“composer.json”和“composer.lock”文件并重新生成类自动加载器。
+
+如果新的依赖项与其他依赖项有任何冲突，例如不兼容的共享依赖项，则不会安装。
+
+### [composer 删除]
+
+`composer remove` 命令从您的项目中删除依赖项。 这将更新“composer.json”和“composer.lock”文件并重新生成该类
